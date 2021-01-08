@@ -1,0 +1,537 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+<meta charset="UTF-8">
+
+<title>tseyln</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Alef&display=swap');
+
+body {
+	font-family: "Alef",
+		Helvetica,
+		Arial,
+		sans-serif;
+	font-size: 24px;
+}
+
+button {
+	font-family: "Alef",
+		Helvetica,
+		Arial,
+		sans-serif;
+	font-size: 75%;
+}
+
+#tseyln {
+/*	display: flex;
+	flex-direction: column;*/
+	margin: auto;
+	/*margin-top: 50px;*/
+	/*width: 200px;*/
+}
+
+#output {
+	margin: 5px;
+}
+
+#calculator {
+	display: flex;
+}
+
+#numberInput {
+	display: flex;
+	flex-direction: column;
+	margin-right: 10px;
+}
+
+#operatorInput {
+	display: flex;
+	flex-direction: column;
+}
+
+#operatorInput button {
+	flex-grow: 1;
+	margin: 2px;
+}
+
+.numberRow {
+	display: flex;
+	flex-grow: 1;
+}
+
+.numberRow button {
+	flex-grow: 1;
+	margin: 2px;
+}
+
+#controls {
+	margin-top: 10px;
+}
+
+#options {
+	margin-top: 10px;
+}
+</style>
+
+<script>
+var char = {
+	nun : "\u05E0",
+	vov : "\u05D5",
+	lamed : "\u05DC",
+	shtumerAlef : "\u05D0",
+	tsveyYudn : "\u05F2",
+	samekh : "\u05E1",
+	tsadek : "\u05E6",
+	tsveyVovn : "\u05F0",
+	daled : "\u05D3",
+	reysh : "\u05E8",
+	pasekhTsveyYudn : "\u05E6\u05B7",
+	fey : "\u05E4\u05BF",
+	yud : "\u05D9",
+	langerFey : "\u05E3",
+	zayen : "\u05D6",
+	ayen : "\u05E2",
+	kuf : "\u05E7",
+	beys : "\u05D1",
+	langerNun : "\u05DF",
+	pasekhAlef : "\u05D0\u05B7",
+	khof : "\u05DB",
+	tes : "\u05D8",
+	pey : "\u05E4\u05BC",
+	mem : "\u05DE",
+	kometsAlef : "\u05D0\u05B8",
+	gimel : "\u05D2",
+	vovYud : "\u05F1",
+};
+
+var numbers = [
+	{
+		yivo : "nul",
+		alefBeys : char.nun + char.vov + char.lamed,
+	},
+	{
+		yivo : "eyns",
+		alefBeys : char.shtumerAlef + char.tsveyYudn + char.nun + char.samekh,
+	},
+	{
+		yivo : "tsvey",
+		alefBeys : char.tsadek + char.tsveyVovn + char.tsveyYudn,
+	},
+	{
+		yivo : "dray",
+		alefBeys : char.daled + char.reysh + char.pasekhTsveyYudn,
+	},
+	{
+		yivo : "fir",
+		alefBeys : char.fey + char.yud + char.reysh,
+	},
+	{
+		yivo : "finf",
+		alefBeys : char.fey + char.yud + char.nun + char.langerFey,
+	},
+	{
+		yivo : "zeks",
+		alefBeys : char.zayen + char.ayen + char.kuf + char.samekh,
+	},
+	{
+		yivo : "zibn",
+		alefBeys : char.zayen + char.yud + char.beys + char.langerNun,
+	},
+	{
+		yivo : "akht",
+		alefBeys : char.pasekhAlef + char.khof + char.tes,
+	},
+	{
+		yivo : "nayn",
+		alefBeys : char.nun + char.pasekhTsveyYudn + char.langerNun,
+	},
+	{
+		yivo : "tsen",
+		alefBeys : char.tsadek + char.ayen + char.langerNun,
+	},
+	{
+		yivo : "elf",
+		alefBeys : char.ayen + char.lamed + char.langerFey,
+	},
+	{
+		yivo : "tsvelf",
+		alefBeys : char.tsadek + char.tsveyVovn + char.ayen + char.lamed + char.langerFey,
+	},
+	{
+		yivo : "draytsn",
+		alefBeys : char.daled + char.reysh + char.pasekhTsveyYudn + char.tsadek + char.langerNun,
+	},
+	{
+		yivo : "fertsn",
+		alefBeys : char.fey + char.ayen + char.reysh + char.tsadek + char.langerNun,
+	},
+	{
+		yivo : "fuftsn",
+		alefBeys : char.fey + char.vov + char.fey + char.tsadek + char.langerNun,
+	},
+	{
+		yivo : "zekhtsn",
+		alefBeys : char.zayen + char.ayen + char.khof + char.tsadek + char.langerNun,
+	},
+	{
+		yivo : "zibetsn",
+		alefBeys : char.zayen + char.yud + char.beys + char.ayen + char.tsadek + char.langerNun,
+	},
+	{
+		yivo : "akhstn",
+		alefBeys : char.pasekhAlef + char.khof + char.tsadek + char.langerNun,
+	},
+	{
+		yivo : "naynstn",
+		alefBeys : char.nun + char.pasekhTsveyYudn + char.nun + char.tsadek + char.langerNun,
+	},
+];
+
+numbers[20] = {
+	yivo : "tsvantsik",
+	alefBeys : char.tsadek + char.tsveyVovn + char.pasekhAlef + char.tsadek + char.yud + char.kuf,
+};
+
+numbers[30] = {
+	yivo : "draysik",
+	alefBeys : char.daled + char.reysh + char.pasekhTsveyYudn + char.samekh + char.yud + char.kuf,
+};
+
+numbers[40] = {
+	yivo : "fertsik",
+	alefBeys : char.fey + char.ayen + char.reysh + char.tsadek + char.yud + char.kuf,
+};
+
+numbers[50] = {
+	yivo : "fuftsik",
+	alefBeys : char.fey + char.vov + char.fey + char.tsadek + char.yud + char.kuf,
+};
+
+numbers[60] = {
+	yivo : "zekhtsik",
+	alefBeys : char.zayen + char.ayen + char.khof + char.tsadek + char.yud + char.kuf,
+};
+
+numbers[70] = {
+	yivo : "zibetsik",
+	alefBeys : char.zayen + char.yud + char.beys + char.ayen + char.tsadek + char.yud + char.kuf,
+};
+
+numbers[80] = {
+	yivo : "akhtsik",
+	alefBeys : char.pasekhAlef + char.khof + char.tsadek + char.yud + char.kuf,
+};
+
+numbers[90] = {
+	yivo : "nayntsik",
+	alefBeys : char.nun + char.pasekhTsveyYudn + char.nun + char.tsadek + char.yud + char.kuf,
+};
+
+var operators = {
+	add : {
+		yivo : "plus",
+		alefBeys : char.pey + char.lamed + char.vov + char.samekh,
+		yivoAlt : "mit",
+		alefBeysAlt : char.mem + char.yud + char.tes,
+		calc : function(a, b) { return a + b; },
+	},
+	subtract : {
+		yivo : "minus",
+		alefBeys : char.mem + char.yud + char.nun + char.vov + char.samekh,
+		calc : function(a, b) { return a - b; },
+	},
+	multiply : {
+		yivo : "mol",
+		alefBeys : char.mem + char.kometsAlef + char.lamed,
+		calc : function(a, b) { return a * b; },
+	},
+	divide : {
+		yivo : "geteylt oyf",
+		alefBeys :
+			char.gimel + char.ayen + char.tes + char.tsveyYudn + char.lamed + char.tes +
+			" " +
+			char.shtumerAlef + char.vovYud + char.langerFey,
+		calc : function(a, b) { return a / b; },
+	},
+};
+
+function numberToYiddish(num, mode) {
+	var numYiddish = num.toString(); // default case
+
+	if (num >= 0 && num < 20) {
+		if (numbers[num] != undefined) {
+			numYiddish = numbers[num][mode];
+		}
+	}
+	else if (num < 100) {
+		var tensPlace = Math.floor(num / 10) * 10;
+
+		if (tensPlace != undefined) {
+			var remainder = num - tensPlace;
+
+			numYiddish = "";
+
+			if (numbers[remainder] != undefined) {
+				if (remainder != 0) {
+					numYiddish += numbers[remainder][mode];
+
+					// remove samekh from eyns
+					if (remainder === 1) {
+						numYiddish = numYiddish.substr(0, numYiddish.length - 1);
+
+						if (mode === "alefBeys") {
+							numYiddish = numYiddish.substr(0, numYiddish.length - 1);
+							numYiddish += char.langerNun;
+						}
+					}
+
+					numYiddish += " ";
+
+					if (mode === "yivo") {
+						numYiddish += "un";
+					}
+					else {
+						numYiddish += char.shtumerAlef + char.vov + char.langerNun;
+					}
+
+					numYiddish += " ";
+				}
+				
+				numYiddish += numbers[tensPlace][mode];
+			}
+		}
+	}
+
+	return numYiddish;
+}
+
+var curMode = null;
+
+var inputs = [ "", "", "", ];
+var curInput = -1;
+
+var result = null;
+
+function changeTextMode(mode) {
+	curMode = mode;
+
+	var numberButtons = document.getElementsByClassName("numberButton");
+
+	for (var i = 0; i < numberButtons.length; i++) {
+		var num = parseInt(numberButtons[i].classList[1]);
+		var numYiddish = numberToYiddish(num, curMode);
+		numberButtons[i].innerText = numYiddish;
+	}
+
+	var operatorButtons = document.getElementsByClassName("operatorButton");
+
+	for (var i = 0; i < operatorButtons.length; i++) {
+		var operator = operatorButtons[i].classList[1];
+		operatorButtons[i].innerText = operators[operator][curMode];
+	}
+
+	updateOutput(mode);
+}
+
+function updateOutput(mode) {
+	var outputStr = "";
+
+	if (curInput >= 0) {
+		outputStr += numberToYiddish(parseInt(inputs[0]), mode);
+	}
+
+	if (curInput >= 1) {
+		if ((mode + "Alt") in operators[inputs[1]]) {
+			outputStr += " " +  operators[inputs[1]][mode + "Alt"];
+		}
+		else {
+			outputStr += " " +  operators[inputs[1]][mode];
+		}
+	}
+
+	if (curInput >= 2) {
+		outputStr += " " + numberToYiddish(parseInt(inputs[2]), mode);
+	}
+
+	if (curInput >= 3) {
+		outputStr += " ";
+
+		if (mode === "yivo") {
+			outputStr += "iz";
+		}
+		else {
+			outputStr += char.shtumerAlef + char.yud + char.zayen;
+		}
+
+		outputStr += " ";
+
+		outputStr += numberToYiddish(result, mode);
+	}
+	else {
+		outputStr += " _";
+	}
+
+	document.getElementById("output").innerText = outputStr;
+}
+
+function makeNumberInputHandler(num) {
+	return function() {
+		if (curInput < 0 || curInput > 2) {
+			reset();
+		}
+
+		if (curInput === 1) {
+			curInput++;
+		}
+
+		inputs[curInput] += num.toString();
+
+		// console.log(inputs);
+
+		updateOutput(curMode);
+	}
+}
+
+function makeOperatorInputHandler(operator) {
+	return function() {
+		if (curInput === 0) {
+			if (inputs[curInput].length <= 0) {
+				inputs[curInput] = "0";
+			}
+
+			curInput++;
+		}
+
+		if (curInput === 1) {
+			inputs[curInput] = operator;
+		}
+
+		// console.log(inputs);
+
+		updateOutput(curMode);
+	}
+}
+
+function reset() {
+	inputs = ["", "", "", ];
+	curInput = 0;
+}
+
+function init() {
+	var numberButtons = document.getElementsByClassName("numberButton");
+
+	for (var i = 0; i < numberButtons.length; i++) {
+		var num = parseInt(numberButtons[i].innerText);
+		numberButtons[i].onclick = makeNumberInputHandler(num);
+	}
+
+	var operatorButtons = document.getElementsByClassName("operatorButton");
+
+	for (var i = 0; i < operatorButtons.length; i++) {
+		var operator = operatorButtons[i].classList[1];
+		operatorButtons[i].onclick = makeOperatorInputHandler(operator);
+	}
+
+	document.getElementById("equalsButton").onclick = function() {
+		// console.log(inputs);
+
+		if (inputs[0].length <= 0) {
+			inputs[0] = "0";
+		}
+
+		if (inputs[1].length <= 0) {
+			inputs[1] = "add";
+		}
+
+		if (inputs[2].length <= 0) {
+			inputs[2] = "0";
+		}
+
+		result = operators[inputs[1]]
+			.calc(parseInt(inputs[0]), parseInt(inputs[2]));
+
+		curInput = 3;
+
+		// console.log(result);
+
+		updateOutput(curMode);
+	}
+
+	document.getElementById("clearButton").onclick = function() {
+		reset();
+		curInput = -1;
+		updateOutput(curMode);
+	}
+
+	document.getElementById("alefBeysButton").onclick = function() {
+		changeTextMode("alefBeys");
+	};
+
+	document.getElementById("yivoButton").onclick = function() {
+		changeTextMode("yivo");
+	}
+
+	changeTextMode("yivo");
+}
+</script>
+
+</head>
+
+<body onload="init();">
+	<div id="tseyln">
+		<div id="output">
+			eyn un eyn iz tsvey
+		</div>
+		<div id="calculator">
+			<div id="numberInput">
+				<div class="numberRow">
+					<button class="numberButton 7">7</button>
+					<button class="numberButton 8">8</button>
+					<button class="numberButton 9">9</button>
+				</div>
+				<div class="numberRow">
+					<button class="numberButton 4">4</button>
+					<button class="numberButton 5">5</button>
+					<button class="numberButton 6">6</button>
+				</div>
+				<div class="numberRow">
+					<button class="numberButton 1">1</button>
+					<button class="numberButton 2">2</button>
+					<button class="numberButton 3">3</button>
+				</div>
+				<div class="numberRow">
+					<button class="numberButton 0">0</button>
+					<button style="visibility: hidden;">_</button>
+					<button style="visibility: hidden;">_</button>
+				</div>
+			</div>
+			<div id="operatorInput">
+				<button class="operatorButton divide">/</button>
+				<button class="operatorButton multiply">*</button>
+				<button class="operatorButton subtract">-</button>
+				<button class="operatorButton add">+</button>
+			</div>
+		</div>
+		<div id="controls">
+			<div>
+				<button id="equalsButton">vos is der tsol?</button>
+			</div>
+			<div>
+				<button id="clearButton">nokh a mol</button>
+			</div>
+		</div>
+		<div id="options">
+			<div>
+				<button id="alefBeysButton">alef-beys</button>
+			</div>
+			<div>
+				<button id="yivoButton">YIVO</button>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>
